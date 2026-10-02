@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b78ff">
+<title>Milk Khata — Offline Milk Delivery Ledger</title>
+<style>
+:root{
+  --blue:#0b78ff;--blue-dark:#075fcf;--blue-soft:#eaf4ff;--ink:#142033;--muted:#6b7280;
+  --line:#dfe7f2;--card:#fff;--bg:#f6f8fc;--green:#199653;--green-soft:#e9f8ef;
+  --red:#d53d44;--red-soft:#fff0f1;--amber:#b36a00;--amber-soft:#fff5dc;
+  --purple:#7447c9;--purple-soft:#f2ebff;--shadow:0 12px 30px rgba(16,39,74,.10);--radius:18px;
+}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;padding-bottom:94px}.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0a77ff,#0b72ef);color:#fff;box-shadow:0 6px 18px rgba(7,95,207,.22)}
+.topbar-inner{max-width:920px;margin:auto;padding:14px 16px 12px}.brand-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;border-radius:13px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:23px;font-weight:800;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.brand h1{font-size:20px;line-height:1.05;margin:0;font-weight:800}.brand small{display:block;opacity:.85;font-size:11px;margin-top:3px}.top-actions{display:flex;gap:8px}.icon-btn{width:40px;height:40px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.12);color:#fff;border-radius:12px;display:grid;place-items:center;font-size:18px}
+.month-switcher{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}.month-nav{display:flex;align-items:center;gap:8px}.month-title{min-width:160px;text-align:center;font-size:18px;font-weight:800}.month-arrow{border:0;background:rgba(255,255,255,.14);color:#fff;width:36px;height:36px;border-radius:11px;font-size:23px}.subline{font-size:11px;opacity:.84}
+.main{max-width:920px;margin:auto;padding:14px 14px 24px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:14px 2px 10px}.section-head h2{font-size:16px;margin:0}.section-head p{font-size:12px;color:var(--muted);margin:3px 0 0}.link-btn{border:0;background:transparent;color:var(--blue);font-weight:700;padding:5px}
+.summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.metric{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:0 5px 18px rgba(25,48,86,.06)}.metric .k{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.metric .value{font-size:21px;font-weight:850;margin-top:8px;letter-spacing:-.3px}.metric .note{font-size:10px;color:var(--muted);margin-top:4px}.metric.blue{background:linear-gradient(135deg,#fff,#eef6ff)}.metric.green{background:linear-gradient(135deg,#fff,#edf9f2)}.metric.red{background:linear-gradient(135deg,#fff,#fff2f3)}.metric.purple{background:linear-gradient(135deg,#fff,#f3eeff)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-weight:750;font-size:11px}.pill.blue{background:var(--blue-soft);color:var(--blue-dark)}.pill.green{background:var(--green-soft);color:var(--green)}.pill.red{background:var(--red-soft);color:var(--red)}.pill.purple{background:var(--purple-soft);color:var(--purple)}.pill.amber{background:var(--amber-soft);color:var(--amber)}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:10px 0}.search{flex:1;min-width:190px;position:relative}.search input{width:100%;padding:12px 14px 12px 40px;border:1px solid var(--line);border-radius:14px;background:#fff;outline:none}.search span{position:absolute;left:14px;top:10px;color:#8e98aa}.select{border:1px solid var(--line);border-radius:14px;background:#fff;padding:11px 12px;min-width:120px;outline:none}
+.customers{display:grid;gap:10px}.customer-card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;box-shadow:0 5px 20px rgba(25,48,86,.06)}.customer-main{display:flex;align-items:center;gap:10px}.avatar{width:42px;height:42px;flex:0 0 auto;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:850;background:linear-gradient(135deg,#0b78ff,#49a0ff);box-shadow:0 6px 14px rgba(11,120,255,.22)}.customer-info{min-width:0;flex:1}.customer-name{font-weight:800;display:flex;align-items:center;gap:7px;flex-wrap:wrap}.customer-meta{font-size:11px;color:var(--muted);margin-top:3px}.customer-due{text-align:right;min-width:76px}.customer-due strong{display:block;font-size:16px}.customer-due span{font-size:10px;color:var(--muted)}.customer-actions{display:flex;gap:8px;margin-top:11px}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;padding:9px 10px;font-weight:750;font-size:12px}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.soft{background:var(--blue-soft);border-color:#cfe5ff;color:var(--blue-dark)}.btn.green{background:var(--green-soft);border-color:#ccefd9;color:var(--green)}.btn.danger{background:var(--red-soft);border-color:#ffd4d7;color:var(--red)}.btn.icon{width:40px;padding:0;display:grid;place-items:center}.btn:active,.icon-btn:active,.month-arrow:active{transform:translateY(1px)}
+.fab{position:fixed;right:max(18px,calc((100vw - 920px)/2 + 18px));bottom:18px;z-index:18;border:0;background:var(--blue);color:#fff;padding:14px 18px;border-radius:999px;font-weight:850;box-shadow:0 12px 30px rgba(11,120,255,.35)}
+.nav-bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);z-index:17}.nav-inner{max-width:920px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);padding:8px 8px env(safe-area-inset-bottom)}.nav-item{border:0;background:transparent;padding:7px;color:#8290a3;border-radius:12px;font-size:10px;font-weight:700}.nav-item.active{color:var(--blue);background:var(--blue-soft)}.nav-icon{font-size:18px;display:block;margin-bottom:3px}
+.empty{background:#fff;border:1px dashed #cbd7e8;border-radius:17px;padding:28px 18px;text-align:center}.empty .big{font-size:36px}.empty h3{margin:8px 0 5px}.empty p{margin:0 auto 14px;max-width:380px;color:var(--muted);font-size:12px}
+.modal{position:fixed;inset:0;z-index:50;display:none;background:rgba(10,19,34,.46);padding:12px}.modal.show{display:flex;align-items:flex-end;justify-content:center}.sheet{width:min(720px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:24px 24px 12px 12px;box-shadow:0 -10px 50px rgba(0,0,0,.22);padding:14px 14px 18px}.sheet.center{border-radius:24px}.handle{width:42px;height:5px;border-radius:99px;background:#d8dfeb;margin:0 auto 12px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.modal-head h3{margin:0;font-size:18px}.close{border:0;background:#f1f4f8;width:36px;height:36px;border-radius:12px;font-size:20px}.form-grid{display:grid;gap:11px;margin-top:12px}.two{grid-template-columns:1fr 1fr}.field label{display:block;font-size:11px;font-weight:700;color:#6d7889;margin:0 0 6px 3px}.input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:#fff;outline:none;color:var(--ink)}.field textarea{min-height:84px;resize:vertical}.input:focus,.field textarea:focus,.field select:focus{border-color:#95c5ff;box-shadow:0 0 0 3px rgba(11,120,255,.10)}.section-box{border:1px solid var(--line);border-radius:16px;padding:12px;background:#fbfcfe}.section-box h4{margin:0 0 10px;font-size:13px}.radios{display:flex;gap:10px;flex-wrap:wrap}.radio-card{flex:1;min-width:120px;border:1px solid var(--line);border-radius:13px;padding:11px}.radio-card.active{border-color:#9bc8ff;background:var(--blue-soft)}.radio-card input{margin-right:6px}.hint{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.4}.switch-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.switch{position:relative;width:50px;height:30px}.switch input{opacity:0;width:0;height:0}.slider{position:absolute;inset:0;background:#d5dce7;border-radius:99px;transition:.2s}.slider:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;box-shadow:0 2px 7px rgba(0,0,0,.18);transition:.2s}.switch input:checked+.slider{background:var(--blue)}.switch input:checked+.slider:before{transform:translateX(20px)}.shifts{display:flex;gap:8px}.shift-chip{flex:1;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px;text-align:center;font-weight:750;font-size:12px}.shift-chip.active{background:var(--blue-soft);border-color:#a9d2ff;color:var(--blue-dark)}
+.customer-banner{display:flex;align-items:center;gap:11px;padding:12px;background:linear-gradient(135deg,#eef7ff,#f7fbff);border:1px solid #d7eaff;border-radius:15px;margin-top:10px}.customer-banner .rate{font-size:11px;color:var(--muted)}.chips{display:flex;gap:7px;overflow:auto;padding:2px 0 3px}.chip{white-space:nowrap;border:1px solid #cfe5ff;color:var(--blue-dark);background:var(--blue-soft);padding:8px 11px;border-radius:999px;font-size:11px;font-weight:800}.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.entry-list{display:grid;gap:9px}.entry{display:flex;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:15px;background:#fff}.entry-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:18px}.entry-ico.morning{background:#fff4d7}.entry-ico.evening{background:#edf3ff}.entry-body{flex:1;min-width:0}.entry-top{display:flex;align-items:center;gap:8px;font-weight:800;font-size:12px}.entry-meta{font-size:10px;color:var(--muted);margin-top:3px}.entry-price{font-weight:850;font-size:15px}.entry-menu{border:0;background:#f2f4f7;width:34px;height:34px;border-radius:10px}
+.ledger-table{width:100%;border-collapse:collapse;font-size:12px}.ledger-table th,.ledger-table td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:right}.ledger-table th:first-child,.ledger-table td:first-child{text-align:left}.ledger-table th{color:var(--muted);font-size:10px}.balance-box{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.balance{padding:11px;border-radius:14px;background:#f8fafc;border:1px solid var(--line)}.balance b{font-size:17px}.balance span{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%) translateY(20px);background:#152235;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow);font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.24s;z-index:70}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.print-only{display:none}
+@media(min-width:760px){.summary-grid{grid-template-columns:repeat(5,1fr)}.customers{grid-template-columns:repeat(2,1fr)}.modal.show{align-items:center}.sheet{border-radius:24px}.two{display:grid}.fab{bottom:24px}.nav-bottom{display:none}.app{padding-bottom:24px}}
+@media(max-width:430px){.two{grid-template-columns:1fr 1fr}.month-title{min-width:140px;font-size:17px}.customer-actions .btn{flex:1}.metric .value{font-size:19px}}
+@media print{body{background:#fff}.app,.nav-bottom,.fab,.modal,.toast{display:none!important}.print-only{display:block;padding:28px}.print-only h1{margin:0 0 4px}.print-only .muted{color:#666}.print-table{width:100%;border-collapse:collapse;margin-top:18px;font-size:12px}.print-table th,.print-table td{border:1px solid #999;padding:7px;text-align:left}.print-table th:nth-child(n+2),.print-table td:nth-child(n+2){text-align:right}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-row">
+        <div class="brand"><div class="logo">🥛</div><div><h1>Milk Khata</h1><small>Offline milk delivery ledger</small></div></div>
+        <div class="top-actions"><button class="icon-btn" id="backupBtn" title="Export backup">⇩</button><button class="icon-btn" id="settingsBtn" title="App settings">⚙</button></div>
+      </div>
+      <div class="month-switcher">
+        <button class="month-arrow" id="prevMonth">‹</button>
+        <div><div class="month-title" id="monthTitle">October 2026</div><div class="subline" id="monthSub">All customer accounts</div></div>
+        <button class="month-arrow" id="nextMonth">›</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section>
+      <div class="section-head"><div><h2>Dashboard</h2><p id="dashboardNote">Current month overview</p></div><button class="link-btn" id="todayBtn">Today</button></div>
+      <div class="summary-grid">
+        <div class="metric blue"><div class="k">Total Milk <span>🥛</span></div><div class="value" id="mMilk">0.0 L</div><div class="note">Delivered this month</div></div>
+        <div class="metric"><div class="k">Total Bill <span>₹</span></div><div class="value" id="mBill">₹0</div><div class="note">All customers</div></div>
+        <div class="metric green"><div class="k">Received <span>✓</span></div><div class="value" id="mReceived">₹0</div><div class="note">Payments recorded</div></div>
+        <div class="metric red"><div class="k">Net Due <span>!</span></div><div class="value" id="mDue">₹0</div><div class="note">This month + carry</div></div>
+        <div class="metric purple"><div class="k">Outstanding <span>∑</span></div><div class="value" id="mOutstanding">₹0</div><div class="note">Across all customers</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head"><div><h2>Customers</h2><p><span id="customerCount">0</span> active accounts</p></div><button class="btn primary" id="addCustomerTop">+ Customer</button></div>
+      <div class="toolbar"><div class="search"><span>⌕</span><input id="searchInput" placeholder="Search customers..."></div><select class="select" id="dueFilter"><option value="all">All customers</option><option value="due">With due</option><option value="clear">Paid / clear</option></select></div>
+      <div class="customers" id="customerList"></div>
+    </section>
+  </main>
+
+  <button class="fab" id="fabCustomer">＋ Customer</button>
+  <nav class="nav-bottom"><div class="nav-inner"><button class="nav-item active" data-tab="home"><span class="nav-icon">⌂</span>Home</button><button class="nav-item" data-tab="reports"><span class="nav-icon">▥</span>Reports</button><button class="nav-item" data-tab="customers"><span class="nav-icon">☻</span>Customers</button></div></nav>
+</div>
+
+<div class="modal" id="customerModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3 id="customerModalTitle">Add Customer</h3><button class="close" data-close="customerModal">×</button></div>
+  <form id="customerForm" class="form-grid">
+    <input type="hidden" id="customerId">
+    <div class="field"><label>Name</label><input class="input" id="customerName" required placeholder="e.g. Ram"></div>
+    <div class="field"><label>Phone Number</label><input class="input" id="customerPhone" inputmode="tel" placeholder="10-digit mobile number"></div>
+    <div class="field"><label>Billing Cycle</label><select class="input" id="billCycle"><option value="monthly">Every month</option><option value="7days">Every 7 days</option><option value="15days">Every 15 days</option></select></div>
+    <div class="form-grid two">
+      <div class="field"><label>Bill Date</label><select class="input" id="billDate"><option value="1">1st of every month</option><option value="5">5th of every month</option><option value="10">10th of every month</option><option value="15">15th of every month</option><option value="20">20th of every month</option><option value="25">25th of every month</option></select></div>
+      <div class="field"><label>Billing Time</label><input class="input" id="billTime" type="time" value="18:00"></div>
+    </div>
+    <div class="section-box"><h4>Pricing</h4>
+      <div class="form-grid" style="margin-top:0"><div class="field"><label>Price per litre</label><input class="input" id="customerRate" type="number" step="0.01" min="0" value="80"></div></div>
+      <div class="hint">A fixed default rate is used for every delivery. You can change the rate for an individual entry.</div>
+    </div>
+    <div class="section-box"><div class="switch-row"><div><h4 style="margin-bottom:4px">Auto Add Entry</h4><div class="hint">Adds missing default-quantity delivery entries when the app is opened.</div></div><label class="switch"><input type="checkbox" id="autoAdd"><span class="slider"></span></label></div>
+      <div id="autoSettings" style="margin-top:11px"><div class="shifts"><button type="button" class="shift-chip active" data-auto-shift="evening">🌙 Evening</button><button type="button" class="shift-chip" data-auto-shift="morning">☀️ Morning</button><button type="button" class="shift-chip" data-auto-shift="both">Both</button></div>
+      <div class="form-grid two" style="margin-top:10px"><div class="field"><label>Default Quantity (L)</label><input class="input" id="defaultQty" type="number" step="0.01" min="0.01" value="1"></div><div class="field"><label>Delivery Time</label><input class="input" id="deliveryTime" type="time" value="16:00"></div></div></div>
+    </div>
+    <button class="btn primary" type="submit" style="width:100%;padding:12px">Save Customer</button>
+    <button class="btn danger" type="button" id="deleteCustomerBtn" style="display:none;width:100%">Delete Customer</button>
+  </form>
+</div></div>
+
+<div class="modal" id="entryModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3>Add New Entry</h3><button class="close" data-close="entryModal">×</button></div>
+  <div class="customer-banner"><div class="avatar" id="entryAvatar">R</div><div><div class="customer-name" id="entryCustomerName">Ram</div><div class="rate" id="entryRateBadge">Default Rate: ₹80.0/L</div></div></div>
+  <form id="entryForm" class="form-grid">
+    <input type="hidden" id="entryCustomerId"><div class="form-grid two"><div class="field"><label>Date</label><input class="input" id="entryDate" type="date" required></div><div class="field"><label>Shift</label><select class="input" id="entryShift"><option value="morning">☀️ Morning</option><option value="evening">🌙 Evening</option></select></div></div>
+    <div class="field"><label>Quantity (L)</label><input class="input" id="entryQty" type="number" step="0.001" min="0.001" value="1" required></div>
+    <div class="chips"><button class="chip" type="button" data-qty="0.25">250ml</button><button class="chip" type="button" data-qty="0.5">500ml</button><button class="chip active" type="button" data-qty="1">1L</button><button class="chip" type="button" data-qty="2">2L</button><button class="chip" type="button" data-qty="5">5L</button></div>
+    <div class="field"><label>Rate (₹ per L)</label><input class="input" id="entryRate" type="number" step="0.01" min="0" value="80" required></div>
+    <div class="field"><label>Remarks (Optional)</label><textarea id="entryRemarks" placeholder="e.g. Extra cream, festival delivery..."></textarea></div>
+    <div class="field"><label>Photo (Optional)</label><input class="input" id="entryPhoto" type="file" accept="image/*"></div>
+    <div class="balance-box"><div class="balance"><span>Entry total</span><b id="entryTotal">₹80</b></div><div class="balance"><span>Unit</span><b id="entryUnit">₹80/L</b></div></div>
+    <button class="btn primary" type="submit" style="width:100%;padding:13px">Add Entry</button>
+  </form>
+</div></div>
+
+<div class="modal" id="profileModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3 id="profileTitle">Customer</h3><button class="close" data-close="profileModal">×</button></div>
+  <div class="customer-banner"><div class="avatar" id="profileAvatar">R</div><div style="min-width:0;flex:1"><div class="customer-name" id="profileName">Ram</div><div class="rate" id="profileRate">₹80/L • 1 L default</div></div><button class="btn icon" id="editProfileBtn">✎</button></div>
+  <div class="toolbar"><button class="btn soft" id="shareBtn">◉ Share</button><button class="btn green" id="payBtn">＋ Pay</button><button class="btn" id="pdfBtn">▣ PDF</button><button class="btn" id="historyBtn">↶ History</button></div>
+  <div class="summary-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="metric"><div class="k">Month Milk</div><div class="value" id="pMilk">0 L</div></div><div class="metric"><div class="k">Month Bill</div><div class="value" id="pBill">₹0</div></div><div class="metric red"><div class="k">Current Due</div><div class="value" id="pDue">₹0</div></div></div>
+  <div class="section-head"><div><h2 style="font-size:14px">Entries</h2><p id="profileCycle">Billing: Monthly</p></div><button class="btn primary" id="profileAddEntry">+ Add Entry</button></div>
+  <div class="entry-list" id="profileEntries"></div>
+</div></div>
+
+<div class="modal" id="ledgerModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3>Outstanding Ledger</h3><button class="close" data-close="ledgerModal">×</button></div>
+  <div style="margin-top:10px;overflow:auto"><table class="ledger-table"><thead><tr><th>Month</th><th>Bill</th><th>Paid</th><th>Remaining</th></tr></thead><tbody id="ledgerBody"></tbody></table></div>
+  <div class="balance-box"><div class="balance"><span>Carry forward</span><b id="carryForward">₹0</b></div><div class="balance"><span>Total outstanding</span><b id="ledgerOutstanding">₹0</b></div></div>
+</div></div>
+
+<div class="modal" id="paymentModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3>Record Payment</h3><button class="close" data-close="paymentModal">×</button></div>
+  <form id="paymentForm" class="form-grid"><input type="hidden" id="paymentCustomerId"><div class="field"><label>Payment Date</label><input class="input" id="paymentDate" type="date" required></div><div class="field"><label>Received Amount (₹)</label><input class="input" id="paymentAmount" type="number" min="0.01" step="0.01" required placeholder="e.g. 500"></div><div class="field"><label>Note (Optional)</label><textarea id="paymentNote" placeholder="Cash / UPI / partial payment..."></textarea></div><button class="btn green" type="submit" style="width:100%;padding:13px">Save Payment</button></form>
+</div></div>
+
+<div class="modal" id="historyModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3 id="historyTitle">History</h3><button class="close" data-close="historyModal">×</button></div>
+  <div id="historyBody" style="margin-top:12px"></div>
+</div></div>
+
+<div class="modal" id="settingsModal"><div class="sheet">
+  <div class="handle"></div><div class="modal-head"><h3>App Settings</h3><button class="close" data-close="settingsModal">×</button></div>
+  <div class="section-box" style="margin-top:12px"><h4>Offline-first storage</h4><div class="hint">All customers, deliveries, payments and preferences are stored only in this browser using localStorage. No server or account is required.</div></div>
+  <div class="form-grid"><button class="btn" id="exportJsonBtn">Export JSON Backup</button><button class="btn" id="importJsonBtn">Import JSON Backup</button><input id="importFile" type="file" accept="application/json" style="display:none"><button class="btn danger" id="resetBtn">Reset All Local Data</button></div>
+</div></div>
+
+<div class="print-only" id="printArea"></div><div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  'use strict';
+  const STORE='milkKhata.v2';
+  const LEGACY_STORE='milkKhata.v1';
+  const now=new Date();
+  const monthKey=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  const storageAvailable=(()=>{try{const k='__milk_khata_test__';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(e){return false}})();
+  let state=loadState();
+  let viewMonth=monthKey(now), activeCustomerId=null, editingCustomerId=null, autoShift='evening';
+
+  function uid(prefix){return prefix+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+  function money(n){return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2})}
+  function money1(n){return '₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:1,maximumFractionDigits:1})}
+  function esc(s){return String(s??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[m]))}
+  function initials(name){return (name||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+  function parseMonth(m){const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1)}
+  function formatMonth(m){return parseMonth(m).toLocaleDateString('en-IN',{month:'long',year:'numeric'})}
+  function formatDate(s){const d=new Date(s+'T00:00:00');return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})}
+  function formatDateTime(ts){return new Date(ts).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'numeric',minute:'2-digit'})}
+  function daysAgo(ts){const diff=Math.max(0,Date.now()-new Date(ts).getTime());const d=Math.floor(diff/86400000);return d===0?'Today':`${d} day${d===1?'':'s'} ago`}
+  function save(){if(!storageAvailable)return;try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+  function normalizeState(data){
+    const safe=data&&typeof data==='object'?data:{};
+    safe.customers=Array.isArray(safe.customers)?safe.customers.map(c=>{const out={...c,priceMode:'default'};delete out.baseFat;delete out.fat;return out}):[];
+    safe.entries=Array.isArray(safe.entries)?safe.entries.map(e=>{const out={...e};delete out.fat;return out}):[];
+    safe.payments=Array.isArray(safe.payments)?safe.payments:[];
+    safe.settings=safe.settings||{appCurrency:'INR'};
+    return safe;
+  }
+  function loadState(){
+    if(storageAvailable){
+      try{const raw=localStorage.getItem(STORE)||localStorage.getItem(LEGACY_STORE);if(raw)return normalizeState(JSON.parse(raw))}catch(e){}
+    }
+    return seedDemo();
+  }
+  function seedDemo(){
+    const ym=monthKey(now), y=now.getFullYear(), m=now.getMonth();
+    const day1=new Date(y,m,1); const d2=new Date(y,m,Math.min(2, new Date(y,m+1,0).getDate()));
+    const customers=[
+      {id:uid('c'),name:'Ram',phone:'9876543210',billDate:1,billCycle:'monthly',billTime:'18:00',rate:80,autoAdd:true,autoShift:'evening',defaultQty:1,deliveryTime:'16:00',createdAt:Date.now()-86400000*8},
+      {id:uid('c'),name:'Ajay',phone:'9876501234',billDate:1,billCycle:'monthly',billTime:'18:00',rate:80,autoAdd:false,autoShift:'evening',defaultQty:3,deliveryTime:'16:00',createdAt:Date.now()-86400000*6},
+      {id:uid('c'),name:'Amit',phone:'9876512345',billDate:1,billCycle:'monthly',billTime:'18:00',rate:80,autoAdd:false,autoShift:'morning',defaultQty:1,deliveryTime:'07:30',createdAt:Date.now()-86400000*5},
+      {id:uid('c'),name:'Sunita',phone:'9876523456',billDate:1,billCycle:'monthly',billTime:'18:00',rate:80,autoAdd:false,autoShift:'both',defaultQty:0.5,deliveryTime:'07:00',createdAt:Date.now()-86400000*4}
+    ];
+    const entries=[];const payments=[];
+    function add(c,date,shift,qty,rate,remark){entries.push({id:uid('e'),customerId:c.id,date,shift,qty,rate,remarks:remark||'',photo:null,indexKey:null,createdAt:new Date(date+'T'+(shift==='morning'?'07:30':'16:00')).getTime()})}
+    const iso=d=>d.toISOString().slice(0,10);
+    add(customers[0],iso(day1),'evening',1,80,'Demo entry');
+    add(customers[1],iso(day1),'morning',3,80); add(customers[1],iso(day1),'evening',3,80);
+    add(customers[2],iso(day1),'evening',2,80); add(customers[2],iso(d2),'morning',1,80);
+    add(customers[3],iso(day1),'morning',0.5,80); add(customers[3],iso(day1),'evening',0.5,80);
+    payments.push({id:uid('p'),customerId:customers[0].id,date:iso(day1),amount:0,note:'',createdAt:Date.now()});
+    return {version:1,customers,entries,payments,settings:{appCurrency:'INR'}};
+  }
+  function customer(id){return state.customers.find(c=>c.id===id)}
+  function monthEntries(cid,ym){return state.entries.filter(e=>e.customerId===cid && e.date.startsWith(ym))}
+  function monthPayments(cid,ym){return state.payments.filter(p=>p.customerId===cid && p.date.startsWith(ym))}
+  function entryKey(e){return `${e.customerId}|${e.date.slice(0,4)}|${e.date.slice(5,7)}|${e.date.slice(8,10)}|${e.shift}`}
+  function entryAmount(e,c){return Number(e.qty||0)*Number(e.rate||0)}
+  function monthBill(cid,ym){const c=customer(cid);return monthEntries(cid,ym).reduce((a,e)=>a+entryAmount(e,c),0)}
+  function monthMilk(cid,ym){return monthEntries(cid,ym).reduce((a,e)=>a+Number(e.qty||0),0)}
+  function monthPaid(cid,ym){return monthPayments(cid,ym).reduce((a,p)=>a+Number(p.amount||0),0)}
+  function balanceByMonth(cid,ym){
+    const d=parseMonth(ym), rows=[]; for(let i=0;i<36;i++){const dt=new Date(d.getFullYear(),d.getMonth()-i,1);const key=monthKey(dt);rows.push({key,bill:monthBill(cid,key),paid:monthPaid(cid,key)})}
+    return rows.reverse().reduce((acc,row)=>{row.open=acc;row.remaining=Math.max(0,acc+row.bill-row.paid);return row.remaining},0);
+  }
+  function currentDue(cid,ym){
+    const months=[];const d=parseMonth(ym);for(let i=11;i>=0;i--){const dt=new Date(d.getFullYear(),d.getMonth()-i,1);months.push(monthKey(dt))}
+    let bal=0;for(const key of months)bal=Math.max(0,bal+monthBill(cid,key)-monthPaid(cid,key));return bal;
+  }
+  function globalStats(ym){let milk=0,bill=0,paid=0,outstanding=0;state.customers.forEach(c=>{milk+=monthMilk(c.id,ym);bill+=monthBill(c.id,ym);paid+=monthPaid(c.id,ym);outstanding+=currentDue(c.id,ym)});return {milk,bill,paid,due:Math.max(0,bill-paid),outstanding}}
+
+  function render(){
+    document.getElementById('monthTitle').textContent=formatMonth(viewMonth);
+    const stats=globalStats(viewMonth);
+    document.getElementById('mMilk').textContent=stats.milk.toFixed(1)+' L';
+    document.getElementById('mBill').textContent=money(stats.bill);
+    document.getElementById('mReceived').textContent=money(stats.paid);
+    document.getElementById('mDue').textContent=money(stats.due);
+    document.getElementById('mOutstanding').textContent=money(stats.outstanding);
+    document.getElementById('dashboardNote').textContent=`${formatMonth(viewMonth)} • carry-forward included in outstanding`;
+    document.getElementById('customerCount').textContent=state.customers.length;
+    renderCustomers();
+  }
+  function renderCustomers(){
+    const q=document.getElementById('searchInput').value.trim().toLowerCase(), filter=document.getElementById('dueFilter').value;
+    const list=state.customers.filter(c=>{const due=currentDue(c.id,viewMonth);return (!q||c.name.toLowerCase().includes(q)||(c.phone||'').includes(q))&&(filter==='all'||(filter==='due'&&due>0)||(filter==='clear'&&due<=0))}).sort((a,b)=>a.name.localeCompare(b.name));
+    const wrap=document.getElementById('customerList');
+    if(!list.length){wrap.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">🥛</div><h3>No customers found</h3><p>Add a customer to start a daily milk khata. Everything stays on this device.</p><button class="btn primary" id="emptyAdd">+ Add Customer</button></div>`;document.getElementById('emptyAdd').onclick=openAddCustomer;return}
+    wrap.innerHTML=list.map(c=>{
+      const due=currentDue(c.id,viewMonth), last=state.entries.filter(e=>e.customerId===c.id).sort((a,b)=>new Date(b.date)-new Date(a.date))[0];
+      return `<article class="customer-card"><div class="customer-main"><div class="avatar">${esc(initials(c.name))}</div><div class="customer-info"><div class="customer-name">${esc(c.name)} ${due>0?'<span class="pill red">Due</span>':'<span class="pill green">Clear</span>'}</div><div class="customer-meta">${c.phone?esc(c.phone)+' • ':''}${last?daysAgo(new Date(last.date+'T12:00:00')):'No entries'} • ₹${Number(c.rate||0).toFixed(0)}/L</div></div><div class="customer-due"><strong style="color:${due>0?'var(--red)':'var(--green)'}">${money(due)}</strong><span>current due</span></div></div><div class="customer-actions"><button class="btn primary" data-action="add" data-id="${c.id}">+ Add Entry</button><button class="btn" data-action="open" data-id="${c.id}">View</button><button class="btn icon" title="Edit" data-action="edit" data-id="${c.id}">✎</button><button class="btn danger icon" title="Delete customer" data-action="delete" data-id="${c.id}">⌫</button></div></article>`
+    }).join('');
+  }
+
+  function openAddCustomer(){
+    editingCustomerId=null;
+    document.getElementById('customerModalTitle').textContent='Add Customer';
+    document.getElementById('customerForm').reset();
+    document.getElementById('customerId').value='';
+    document.getElementById('billCycle').value='monthly';
+    document.getElementById('billDate').value='1';
+    document.getElementById('customerRate').value=80;
+    document.getElementById('defaultQty').value=1;
+    document.getElementById('billTime').value='18:00';
+    document.getElementById('deliveryTime').value='16:00';
+    document.getElementById('autoAdd').checked=false;
+    autoShift='evening';
+    setAutoShiftChips();
+    toggleAutoSettings();
+    document.getElementById('deleteCustomerBtn').style.display='none';
+    openModal('customerModal');
+  }
+  function openEditCustomer(id){
+    const c=customer(id);if(!c)return;
+    editingCustomerId=id;
+    document.getElementById('customerModalTitle').textContent='Edit Customer';
+    document.getElementById('customerId').value=id;
+    document.getElementById('customerName').value=c.name||'';
+    document.getElementById('customerPhone').value=c.phone||'';
+    document.getElementById('billCycle').value=c.billCycle||'monthly';
+    document.getElementById('billDate').value=c.billDate||1;
+    document.getElementById('billTime').value=c.billTime||'18:00';
+    document.getElementById('customerRate').value=c.rate||80;
+    document.getElementById('defaultQty').value=c.defaultQty||1;
+    document.getElementById('deliveryTime').value=c.deliveryTime||'16:00';
+    document.getElementById('autoAdd').checked=!!c.autoAdd;
+    autoShift=c.autoShift||'evening';
+    setAutoShiftChips();
+    toggleAutoSettings();
+    document.getElementById('deleteCustomerBtn').style.display='block';
+    openModal('customerModal');
+  }
+  function toggleAutoSettings(){document.getElementById('autoSettings').style.opacity=document.getElementById('autoAdd').checked?'1':'.5';document.getElementById('autoSettings').style.pointerEvents=document.getElementById('autoAdd').checked?'auto':'none'}
+  function setAutoShiftChips(){document.querySelectorAll('[data-auto-shift]').forEach(b=>b.classList.toggle('active',b.dataset.autoShift===autoShift))}
+  function openAddEntry(cid){
+    const c=customer(cid);if(!c)return;activeCustomerId=cid;
+    document.getElementById('entryCustomerId').value=cid;
+    document.getElementById('entryDate').value=new Date().toISOString().slice(0,10);
+    document.getElementById('entryShift').value=c.autoShift==='morning'?'morning':'evening';
+    document.getElementById('entryQty').value=c.defaultQty||1;
+    document.getElementById('entryRate').value=c.rate||80;
+    document.getElementById('entryRemarks').value='';document.getElementById('entryPhoto').value='';
+    document.querySelectorAll('[data-qty]').forEach(b=>b.classList.toggle('active',Number(b.dataset.qty)==Number(document.getElementById('entryQty').value)));
+    document.getElementById('entryCustomerName').textContent=c.name;document.getElementById('entryAvatar').textContent=initials(c.name);
+    document.getElementById('entryRateBadge').textContent=`Default Rate: ₹${Number(c.rate||0).toFixed(1)}/L`;
+    updateEntryTotal();openModal('entryModal');
+  }
+  function updateEntryTotal(){
+    const c=customer(activeCustomerId);if(!c)return;
+    const qty=Number(document.getElementById('entryQty').value||0),rate=Number(document.getElementById('entryRate').value||0),amount=qty*rate;
+    document.getElementById('entryTotal').textContent=money1(amount);document.getElementById('entryUnit').textContent=`${money1(rate)}/L`;
+  }
+  function openProfile(cid){const c=customer(cid);if(!c)return;activeCustomerId=cid;document.getElementById('profileTitle').textContent=c.name;document.getElementById('profileName').textContent=c.name;document.getElementById('profileAvatar').textContent=initials(c.name);document.getElementById('profileRate').textContent=`${money1(c.rate)}/L • Default ${Number(c.defaultQty||1).toFixed(2)} L`;document.getElementById('pMilk').textContent=monthMilk(cid,viewMonth).toFixed(1)+' L';document.getElementById('pBill').textContent=money(monthBill(cid,viewMonth));document.getElementById('pDue').textContent=money(currentDue(cid,viewMonth));const cycleLabel=c.billCycle==='7days'?'Every 7 days':c.billCycle==='15days'?'Every 15 days':`Monthly on ${ordinal(c.billDate||1)}`;document.getElementById('profileCycle').textContent=`Billing: ${cycleLabel} • ${c.autoAdd?'Auto add on':'Manual entries'}`;renderProfileEntries(cid);openModal('profileModal')}
+  function ordinal(n){const s=['th','st','nd','rd'];const v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+  function renderProfileEntries(cid){const wrap=document.getElementById('profileEntries');const entries=monthEntries(cid,viewMonth).slice().sort((a,b)=>b.date.localeCompare(a.date)||b.shift.localeCompare(a.shift));if(!entries.length){wrap.innerHTML=`<div class="empty"><div class="big">🧾</div><h3>No entries this month</h3><p>Use “Add Entry” to log a delivery.</p></div>`;return}wrap.innerHTML=entries.map(e=>{const c=customer(cid),amount=entryAmount(e,c);return `<div class="entry"><div class="entry-ico ${e.shift}">${e.shift==='morning'?'☀️':'🌙'}</div><div class="entry-body"><div class="entry-top">${formatDate(e.date)} <span class="pill ${e.shift==='morning'?'amber':'blue'}">${e.shift}</span></div><div class="entry-meta">${Number(e.qty).toFixed(2)} L @ ₹${Number(e.rate).toFixed(2)}/L${e.remarks?' • '+esc(e.remarks):''}</div></div><div class="entry-price">${money1(amount)}</div><button class="entry-menu" data-del-entry="${e.id}" title="Delete entry">⋯</button></div>`}).join('')}
+  function openLedger(cid){const c=customer(cid);if(!c)return;activeCustomerId=cid;const d=parseMonth(viewMonth), rows=[];for(let i=11;i>=0;i--){const dt=new Date(d.getFullYear(),d.getMonth()-i,1);rows.push(monthKey(dt))}let carry=0;let html='';rows.forEach(key=>{const bill=monthBill(cid,key),paid=monthPaid(cid,key),opening=carry,remaining=Math.max(0,opening+bill-paid);carry=remaining;html+=`<tr><td>${formatMonth(key)}</td><td>${money(bill)}</td><td style="color:var(--green)">${money(paid)}</td><td style="color:${remaining>0?'var(--red)':'var(--green)'}">${money(remaining)}</td></tr>`});document.getElementById('ledgerBody').innerHTML=html;document.getElementById('carryForward').textContent=money(rows.length?Math.max(0,currentDue(cid,rows[0])):0);document.getElementById('ledgerOutstanding').textContent=money(currentDue(cid,viewMonth));openModal('ledgerModal')}
+  function openPayment(cid){const c=customer(cid);if(!c)return;activeCustomerId=cid;document.getElementById('paymentCustomerId').value=cid;document.getElementById('paymentDate').value=new Date().toISOString().slice(0,10);document.getElementById('paymentAmount').value='';document.getElementById('paymentNote').value='';openModal('paymentModal');setTimeout(()=>document.getElementById('paymentAmount').focus(),80)}
+  function openHistory(cid){const c=customer(cid);if(!c)return;const entries=state.entries.filter(e=>e.customerId===cid).slice().sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);const payments=state.payments.filter(p=>p.customerId===cid).slice().sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);let html='<div class="section-box"><h4>Payments</h4>';if(!payments.length)html+='<div class="hint">No payments recorded.</div>';else html+='<div class="entry-list">'+payments.map(p=>`<div class="entry"><div class="entry-ico morning">₹</div><div class="entry-body"><div class="entry-top">${formatDate(p.date)}</div><div class="entry-meta">${esc(p.note||'Payment')}</div></div><div class="entry-price" style="color:var(--green)">${money1(p.amount)}</div></div>`).join('')+'</div>';html+='</div><div class="section-box" style="margin-top:10px"><h4>All entries</h4>';if(!entries.length)html+='<div class="hint">No entries recorded.</div>';else html+='<div class="entry-list">'+entries.slice(0,60).map(e=>`<div class="entry"><div class="entry-ico ${e.shift}">${e.shift==='morning'?'☀️':'🌙'}</div><div class="entry-body"><div class="entry-top">${formatDate(e.date)} • ${e.shift}</div><div class="entry-meta">${Number(e.qty).toFixed(2)} L @ ₹${Number(e.rate).toFixed(2)}/L</div></div><div class="entry-price">${money1(entryAmount(e,c))}</div></div>`).join('')+'</div>';html+='</div>';document.getElementById('historyTitle').textContent=`${c.name} • History`;document.getElementById('historyBody').innerHTML=html;openModal('historyModal')}
+
+  function openModal(id){document.getElementById(id).classList.add('show');document.body.style.overflow='hidden'}
+  function closeModal(id){document.getElementById(id).classList.remove('show');if(![...document.querySelectorAll('.modal.show')].length)document.body.style.overflow=''}
+  window.handleAndroidBack=function(){
+    const shown=[...document.querySelectorAll('.modal.show')];
+    if(shown.length){ closeModal(shown[shown.length-1].id); return true; }
+    return false;
+  }
+  window.MilkKhataAndroid={
+    shareText:function(title,text){ if(window.AndroidBridge&&AndroidBridge.shareText){AndroidBridge.shareText(String(title||'Milk Khata'),String(text||''));return true} return false },
+    saveTextFile:function(filename,mime,contents){ if(window.AndroidBridge&&AndroidBridge.saveTextFile){AndroidBridge.saveTextFile(String(filename||'milk-khata-backup.json'),String(mime||'application/json'),String(contents||''));return true} return false },
+    printPage:function(title){ if(window.AndroidBridge&&AndroidBridge.printPage){AndroidBridge.printPage(String(title||'Milk Khata'));return true} return false }
+  }
+  function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)}
+
+  document.getElementById('prevMonth').onclick=()=>{const d=parseMonth(viewMonth);d.setMonth(d.getMonth()-1);viewMonth=monthKey(d);render()};
+  document.getElementById('nextMonth').onclick=()=>{const d=parseMonth(viewMonth);d.setMonth(d.getMonth()+1);viewMonth=monthKey(d);render()};
+  document.getElementById('todayBtn').onclick=()=>{viewMonth=monthKey(new Date());render()};
+  document.getElementById('searchInput').oninput=renderCustomers;document.getElementById('dueFilter').onchange=renderCustomers;
+  document.getElementById('addCustomerTop').onclick=openAddCustomer;document.getElementById('fabCustomer').onclick=openAddCustomer;
+  document.getElementById('settingsBtn').onclick=()=>openModal('settingsModal');
+  document.getElementById('backupBtn').onclick=exportBackup;
+  document.querySelectorAll('.close').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+  document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
+  document.getElementById('autoAdd').addEventListener('change',toggleAutoSettings);
+  document.querySelectorAll('[data-auto-shift]').forEach(b=>b.onclick=()=>{autoShift=b.dataset.autoShift;setAutoShiftChips()});
+  document.querySelectorAll('[data-qty]').forEach(b=>b.onclick=()=>{document.getElementById('entryQty').value=b.dataset.qty;document.querySelectorAll('[data-qty]').forEach(x=>x.classList.toggle('active',x===b));updateEntryTotal()});
+  ['entryQty','entryRate'].forEach(id=>document.getElementById(id).addEventListener('input',updateEntryTotal));
+  document.getElementById('customerList').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const id=b.dataset.id; if(b.dataset.action==='add')openAddEntry(id); else if(b.dataset.action==='open')openProfile(id); else if(b.dataset.action==='edit')openEditCustomer(id); else if(b.dataset.action==='delete')deleteCustomer(id)});
+  document.getElementById('profileAddEntry').onclick=()=>{closeModal('profileModal');openAddEntry(activeCustomerId)};
+  document.getElementById('editProfileBtn').onclick=()=>{closeModal('profileModal');openEditCustomer(activeCustomerId)};
+  document.getElementById('shareBtn').onclick=shareCustomer;
+  document.getElementById('payBtn').onclick=()=>openPayment(activeCustomerId);
+  document.getElementById('pdfBtn').onclick=()=>printLedger(activeCustomerId);
+  document.getElementById('historyBtn').onclick=()=>openHistory(activeCustomerId);
+  document.getElementById('profileEntries').addEventListener('click',e=>{const b=e.target.closest('[data-del-entry]');if(!b)return;if(confirm('Delete this delivery entry?')){state.entries=state.entries.filter(x=>x.id!==b.dataset.delEntry);save();render();openProfile(activeCustomerId);toast('Entry deleted')}});
+
+  document.getElementById('customerForm').onsubmit=e=>{
+    e.preventDefault();
+    const data={name:document.getElementById('customerName').value.trim(),phone:document.getElementById('customerPhone').value.trim(),billCycle:document.getElementById('billCycle').value,billDate:Number(document.getElementById('billDate').value),billTime:document.getElementById('billTime').value,rate:Number(document.getElementById('customerRate').value||0),autoAdd:document.getElementById('autoAdd').checked,autoShift,defaultQty:Number(document.getElementById('defaultQty').value||1),deliveryTime:document.getElementById('deliveryTime').value,priceMode:'default'};
+    if(!data.name)return;
+    if(editingCustomerId){Object.assign(customer(editingCustomerId),data)}else{state.customers.push({...data,id:uid('c'),createdAt:Date.now()})}
+    save();closeModal('customerModal');render();runAutoAdd();toast(editingCustomerId?'Customer updated':'Customer added');
+  };
+  function deleteCustomer(id){
+    const c=customer(id);if(!c)return;
+    if(!confirm(`Delete ${c.name} and all their entries/payments? This cannot be undone.`))return;
+    state.customers=state.customers.filter(x=>x.id!==id);
+    state.entries=state.entries.filter(x=>x.customerId!==id);
+    state.payments=state.payments.filter(x=>x.customerId!==id);
+    if(activeCustomerId===id)activeCustomerId=null;
+    if(editingCustomerId===id)editingCustomerId=null;
+    save();closeModal('customerModal');closeModal('profileModal');render();toast('Customer deleted');
+  }
+  document.getElementById('deleteCustomerBtn').onclick=()=>{if(editingCustomerId)deleteCustomer(editingCustomerId)};
+  document.getElementById('entryForm').onsubmit=async e=>{e.preventDefault();const cid=document.getElementById('entryCustomerId').value,c=customer(cid);if(!c)return;const file=document.getElementById('entryPhoto').files[0];let photo=null;if(file){try{photo=await fileToDataUrl(file)}catch(err){}}const item={id:uid('e'),customerId:cid,date:document.getElementById('entryDate').value,shift:document.getElementById('entryShift').value,qty:Number(document.getElementById('entryQty').value),rate:Number(document.getElementById('entryRate').value),remarks:document.getElementById('entryRemarks').value.trim(),photo,createdAt:Date.now()};if(!item.qty||!item.date)return;const duplicate=state.entries.some(x=>x.customerId===cid&&x.date===item.date&&x.shift===item.shift);if(duplicate&&!confirm('An entry already exists for this date and shift. Add another anyway?'))return;state.entries.push(item);save();closeModal('entryModal');render();if(document.getElementById('profileModal').classList.contains('show'))openProfile(cid);toast('Delivery entry added')};
+  document.getElementById('paymentForm').onsubmit=e=>{e.preventDefault();const cid=document.getElementById('paymentCustomerId').value,amt=Number(document.getElementById('paymentAmount').value);if(!amt)return;state.payments.push({id:uid('p'),customerId:cid,date:document.getElementById('paymentDate').value,amount:amt,note:document.getElementById('paymentNote').value.trim(),createdAt:Date.now()});save();closeModal('paymentModal');render();openProfile(cid);toast('Payment recorded')};
+
+  function shareCustomer(){const c=customer(activeCustomerId);if(!c)return;const due=currentDue(c.id,viewMonth),bill=monthBill(c.id,viewMonth),paid=monthPaid(c.id,viewMonth);const text=`Milk Khata • ${c.name}\n${formatMonth(viewMonth)}\nMilk: ${monthMilk(c.id,viewMonth).toFixed(1)} L\nBill: ${money(bill)}\nReceived: ${money(paid)}\nOutstanding: ${money(due)}`;const phone=(c.phone||'').replace(/\D/g,'');if(phone){window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(text)}`,'_blank')}else if(window.MilkKhataAndroid?.shareText){MilkKhataAndroid.shareText('Milk Khata • '+c.name,text)}else if(navigator.share){navigator.share({title:'Milk Khata',text}).catch(()=>{})}else{navigator.clipboard?.writeText(text);toast('Summary copied to clipboard')}}
+  function printLedger(cid){const c=customer(cid);if(!c)return;const entries=monthEntries(cid,viewMonth).slice().sort((a,b)=>a.date.localeCompare(b.date));const rows=entries.map(e=>`<tr><td>${formatDate(e.date)}</td><td>${e.shift}</td><td>${Number(e.qty).toFixed(2)} L</td><td>₹${Number(e.rate).toFixed(2)}</td><td>${money1(entryAmount(e,c))}</td></tr>`).join('');document.getElementById('printArea').innerHTML=`<h1>Milk Khata — ${esc(c.name)}</h1><div class="muted">${formatMonth(viewMonth)} • ${c.phone?esc(c.phone):'No phone'}</div><table class="print-table"><thead><tr><th>Date</th><th>Shift</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows||'<tr><td colspan="5">No entries</td></tr>'}</tbody></table><p><b>Total Milk:</b> ${monthMilk(cid,viewMonth).toFixed(2)} L &nbsp; <b>Bill:</b> ${money(monthBill(cid,viewMonth))} &nbsp; <b>Received:</b> ${money(monthPaid(cid,viewMonth))} &nbsp; <b>Outstanding:</b> ${money(currentDue(cid,viewMonth))}</p>`;if(!MilkKhataAndroid.printPage('Milk Khata — '+c.name)) window.print()}
+  function fileToDataUrl(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
+  function exportBackup(){const filename=`milk-khata-backup-${monthKey(new Date())}.json`;const contents=JSON.stringify(state,null,2);if(!MilkKhataAndroid.saveTextFile(filename,'application/json',contents)){const blob=new Blob([contents],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}else{toast('Choose where to save your backup')}}
+  document.getElementById('exportJsonBtn').onclick=exportBackup;
+  document.getElementById('importJsonBtn').onclick=()=>document.getElementById('importFile').click();
+  document.getElementById('importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const incoming=JSON.parse(r.result);if(!incoming.customers||!incoming.entries||!incoming.payments)throw new Error('Invalid backup');state=incoming;save();closeModal('settingsModal');render();toast('Backup imported')}catch(err){alert('Could not import this backup.')}};r.readAsText(f)};
+  document.getElementById('resetBtn').onclick=()=>{if(confirm('This will permanently remove all Milk Khata data from this browser. Continue?')){if(storageAvailable){try{localStorage.removeItem(STORE);localStorage.removeItem(LEGACY_STORE)}catch(e){}}state=seedDemo();save();closeModal('settingsModal');render();toast('Data reset')}};
+  document.querySelectorAll('.nav-item').forEach(n=>n.onclick=()=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));n.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});if(n.dataset.tab==='customers')document.getElementById('searchInput').focus()});
+
+  function runAutoAdd(){
+    const today=new Date();const iso=today.toISOString().slice(0,10);let created=0;state.customers.filter(c=>c.autoAdd).forEach(c=>{const shifts=c.autoShift==='both'?['morning','evening']:[c.autoShift||'evening'];for(const shift of shifts){if(!state.entries.some(e=>e.customerId===c.id&&e.date===iso&&e.shift===shift)){state.entries.push({id:uid('e'),customerId:c.id,date:iso,shift,qty:Number(c.defaultQty||1),rate:Number(c.rate||0),remarks:'Auto-added delivery',photo:null,indexKey:`${c.id}|${iso.replaceAll('-','|')}|${shift}`,createdAt:new Date(iso+'T'+(shift==='morning'?'07:30':'16:00')).getTime()});created++}}});if(created){save();render();toast(`${created} auto ${created===1?'entry':'entries'} added for today`)}}
+  runAutoAdd();
+  render();
+})();
+</script>
+</body>
+</html>
